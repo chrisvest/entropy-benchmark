@@ -1,5 +1,6 @@
 package org.sample;
 
+import java.security.SecureRandom;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
@@ -13,8 +14,8 @@ import org.openjdk.jmh.annotations.State;
 
 @OutputTimeUnit(TimeUnit.MICROSECONDS)
 @State(Scope.Thread)
-public abstract class EntropyBenchmark
-{
+public abstract class EntropyBenchmark {
+
     private static class XorShift32 {
         // XorShift128 PRNG with a 2^32-1 period.
         int x = System.identityHashCode(this);
@@ -126,6 +127,15 @@ public abstract class EntropyBenchmark
 
     public static class ThreadLocalRandomBenchmark extends EntropyBenchmark {
         private final ThreadLocalRandom rng = ThreadLocalRandom.current();
+
+        @Override
+        public int nextInt() {
+            return rng.nextInt();
+        }
+    }
+
+    public static class SecureRandomBenchmark extends EntropyBenchmark {
+        private final SecureRandom rng = new SecureRandom();
 
         @Override
         public int nextInt() {
