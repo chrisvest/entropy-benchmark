@@ -44,10 +44,21 @@ public abstract class EntropyBenchmark {
 
     public abstract int nextInt();
 
+    //* -- Switch: Remove a leading / to observe bad JIT over-optimisation effects!
+
     @GenerateMicroBenchmark
     public int single() {
+        return nextInt() + 1; // The +1 makes it comparable to the batching benchmark.
+    }
+
+    /*/
+
+    @GenerateMicroBenchmark
+    public int single_unadjusted() {
         return nextInt();
     }
+
+    /*/
 
     // The batching benchmarks show the generators potential for benifitting
     // from instruction-level parallelism.
@@ -55,27 +66,55 @@ public abstract class EntropyBenchmark {
     @OperationsPerInvocation(20)
     @GenerateMicroBenchmark
     public int batch() {
-        nextInt();        // 01
-        nextInt();        // 02
-        nextInt();        // 03
-        nextInt();        // 04
-        nextInt();        // 05
-        nextInt();        // 06
-        nextInt();        // 07
-        nextInt();        // 08
-        nextInt();        // 09
-        nextInt();        // 10
-        nextInt();        // 11
-        nextInt();        // 12
-        nextInt();        // 13
-        nextInt();        // 14
-        nextInt();        // 15
-        nextInt();        // 16
-        nextInt();        // 17
-        nextInt();        // 18
-        nextInt();        // 19
-        return nextInt(); // 20
+        return nextInt() +  // 01
+               nextInt() +  // 02
+               nextInt() +  // 03
+               nextInt() +  // 04
+               nextInt() +  // 05
+               nextInt() +  // 06
+               nextInt() +  // 07
+               nextInt() +  // 08
+               nextInt() +  // 09
+               nextInt() +  // 10
+               nextInt() +  // 11
+               nextInt() +  // 12
+               nextInt() +  // 13
+               nextInt() +  // 14
+               nextInt() +  // 15
+               nextInt() +  // 16
+               nextInt() +  // 17
+               nextInt() +  // 18
+               nextInt() +  // 19
+               nextInt();   // 20
     }
+
+    /*/
+
+    @OperationsPerInvocation(20)
+    @GenerateMicroBenchmark
+    public int batch_wrong() {
+               nextInt();   // 01
+               nextInt();   // 02
+               nextInt();   // 03
+               nextInt();   // 04
+               nextInt();   // 05
+               nextInt();   // 06
+               nextInt();   // 07
+               nextInt();   // 08
+               nextInt();   // 09
+               nextInt();   // 10
+               nextInt();   // 11
+               nextInt();   // 12
+               nextInt();   // 13
+               nextInt();   // 14
+               nextInt();   // 15
+               nextInt();   // 16
+               nextInt();   // 17
+               nextInt();   // 18
+               nextInt();   // 19
+        return nextInt();   // 20
+    }
+    //*/
 
     public static class CounterBenchmark extends EntropyBenchmark {
         private final AtomicInteger counter = new AtomicInteger();
